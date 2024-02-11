@@ -52,20 +52,6 @@ static void epd_write_data(struct EpdInstance *instance, uint8_t data)
     instance->intf->cs_set();
 }
 
-void _epd_write_data(uint8_t data)
-{
-
-  while (SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE) == RESET)
-    ;
-  SPI_I2S_SendData(SPI2, data);
-}
-
-void _epd_write_data_over()
-{
-  while (SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_BSY) != RESET)
-    ;
-}
-
 static bool epd_wait_busy(struct EpdInstance *instance)
 {
     uint32_t timeout = 0;
