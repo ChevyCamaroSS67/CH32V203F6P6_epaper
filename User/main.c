@@ -29,26 +29,7 @@
 
 /* Global Variable */
 
-struct EpdInterface epd_intf = {
-        .delay_ms = epd_delay_ms,
-        .msp_init = epd_msp_init,
-        .res_set = epd_res_set,
-        .res_reset = epd_res_reset,
-        .dc_set = epd_dc_set,
-        .dc_reset = epd_dc_reset,
-        .cs_set = epd_cs_set,
-        .cs_reset = epd_cs_reset,
-        .is_busy = epd_is_busy,
-        .write_byte = epd_write_byte,
-        .write_data = epd_write_data,
-        .write_data_inverted = epd_write_data_inverted,
-};
-
-struct EpdInstance epd1 = {
-        .hibernating = 1,
-        .intf = &epd_intf,
-        .type = EPD_154,
-};
+extern struct EpdInstance epd1;
 
 uint8_t image_bw[EPD_154_W_BUFF_SIZE * EPD_154_H];
 

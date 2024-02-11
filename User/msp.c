@@ -30,12 +30,12 @@
 // SPI interface SPI1
 #define SPIX                SPI1
 
-void epd_delay_ms(uint16_t ms)
+static void epd_delay_ms(uint16_t ms)
 {
     Delay_Ms(ms);
 }
 
-void epd_msp_init(void)
+static void epd_msp_init(void)
 {
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_SPI1, ENABLE);
 
@@ -79,48 +79,48 @@ void epd_msp_init(void)
     SPI_Cmd(SPIX, ENABLE);
 }
 
-void epd_res_set(void)
+static void epd_res_set(void)
 {
     GPIO_SetBits(GPIO_PORT_RES, GPIO_PIN_RES);
 }
 
-void epd_res_reset(void)
+static void epd_res_reset(void)
 {
     GPIO_ResetBits(GPIO_PORT_RES, GPIO_PIN_RES);
 }
 
-void epd_dc_set(void)
+static void epd_dc_set(void)
 {
     GPIO_SetBits(GPIO_PORT_DC, GPIO_PIN_DC);
 }
 
-void epd_dc_reset(void)
+static void epd_dc_reset(void)
 {
     GPIO_ResetBits(GPIO_PORT_DC, GPIO_PIN_DC);
 }
 
-void epd_cs_set(void)
+static void epd_cs_set(void)
 {
     GPIO_SetBits(GPIO_PORT_CS, GPIO_PIN_CS);
 }
 
-void epd_cs_reset(void)
+static void epd_cs_reset(void)
 {
     GPIO_ResetBits(GPIO_PORT_CS, GPIO_PIN_CS);
 }
 
-bool epd_is_busy(void)
+static bool epd_is_busy(void)
 {
   return GPIO_ReadInputDataBit(GPIO_PORT_BUSY, GPIO_PIN_BUSY) == Bit_RESET ? false : true;
 }
 
-void epd_write_byte(uint8_t data)
+static void epd_write_byte(uint8_t data)
 {
     SPI_I2S_SendData(SPIX, data);
     while (SPI_I2S_GetFlagStatus(SPIX, SPI_I2S_FLAG_BSY) != RESET);
 }
 
-void epd_write_data(const uint8_t *data, uint32_t size)
+static void epd_write_data(const uint8_t *data, uint32_t size)
 {
     while(size--)
     {
@@ -130,7 +130,7 @@ void epd_write_data(const uint8_t *data, uint32_t size)
     while (SPI_I2S_GetFlagStatus(SPIX, SPI_I2S_FLAG_BSY) != RESET);
 }
 
-void epd_write_data_inverted(const uint8_t *data, uint32_t size)
+static void epd_write_data_inverted(const uint8_t *data, uint32_t size)
 {
     while(size--)
     {
@@ -139,3 +139,24 @@ void epd_write_data_inverted(const uint8_t *data, uint32_t size)
     }
     while (SPI_I2S_GetFlagStatus(SPIX, SPI_I2S_FLAG_BSY) != RESET);
 }
+
+static struct EpdInterface epd_intf = {
+        .delay_ms = epd_delay_ms,
+        .msp_init = epd_msp_init,
+        .res_set = epd_res_set,
+        .res_reset = epd_res_reset,
+        .dc_set = epd_dc_set,
+        .dc_reset = epd_dc_reset,
+        .cs_set = epd_cs_set,
+        .cs_reset = epd_cs_reset,
+        .is_busy = epd_is_busy,
+        .write_byte = epd_write_byte,
+        .write_data = epd_write_data,
+        .write_data_inverted = epd_write_data_inverted,
+};
+
+struct EpdInstance epd1 = {
+        .hibernating = 1,
+        .intf = &epd_intf,
+        .type = EPD_154,
+};
